@@ -42,7 +42,7 @@ require('lazy').setup({
 
     {
           'nvim-telescope/telescope.nvim',
-          tag = '0.1.0',
+          tag = '0.1.4',
           dependencies=  {
               'nvim-lua/plenary.nvim'
           },
@@ -51,6 +51,10 @@ require('lazy').setup({
     {
           'rose-pine/neovim',
           name= 'rose-pine',
+    },
+    {
+    "rebelot/kanagawa.nvim",
+    name= 'kanagawa',
     },
 
     {

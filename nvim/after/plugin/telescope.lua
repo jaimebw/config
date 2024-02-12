@@ -1,4 +1,3 @@
-
 local find_files = require('telescope.builtin').find_files
 local git_files = require('telescope.builtin').git_files
 local grep_string = require('telescope.builtin').grep_string
@@ -27,5 +26,5 @@ vim.keymap.set('n', '<leader>ps', function()
         search = vim.fn.input("Grep > "),
         file_ignore_patterns = file_ignore_patterns,
     })
-end)
+end,{})
 
