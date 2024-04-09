@@ -12,8 +12,11 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
+    {'mfussenegger/nvim-dap'},
     {'tpope/vim-commentary'
 },
+    { 'Civitasv/cmake-tools.nvim' },
+
     {'nvim-lualine/lualine.nvim',
     dependencies= { 'nvim-tree/nvim-web-devicons'},
     opt = true },

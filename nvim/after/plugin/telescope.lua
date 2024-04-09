@@ -28,3 +28,12 @@ vim.keymap.set('n', '<leader>ps', function()
     })
 end,{})
 
+-- List Breakpoints: Show all breakpoints
+vim.keymap.set('n', '<Leader>db', ':Telescope dap list_breakpoints<CR>', {desc = 'List Breakpoints'})
+
+-- List Frames: Show call stack frames
+vim.keymap.set('n', '<Leader>df', ':Telescope dap frames<CR>', {desc = 'List Frames'})
+
+-- List Variables: Show variables in the current scope
+vim.keymap.set('n', '<Leader>dv', ':Telescope dap variables<CR>', {desc = 'List Variables'})
+
