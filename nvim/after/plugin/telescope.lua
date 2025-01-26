@@ -1,8 +1,9 @@
 local find_files = require('telescope.builtin').find_files
 local git_files = require('telescope.builtin').git_files
 local grep_string = require('telescope.builtin').grep_string
+require('telescope').load_extension('dap')
 
-local file_ignore_patterns = { "node_modules", ".git", "venv","__pycache__","target",".ipynb_checkpoints"}
+local file_ignore_patterns = { "node_modules", ".git/", "venv","__pycache__","target",".ipynb_checkpoints"}
 
 -- Find files
 vim.keymap.set('n', '<leader>pf', function()
