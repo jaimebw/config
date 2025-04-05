@@ -1,33 +1,116 @@
--- Restart Debugging: Terminate the current session and start it again
-vim.keymap.set('n', '<Leader>dr', function() require('dap').terminate(); require('dap').continue() end, {desc = 'Restart Debugging'})
+local dap = require('dap')
+local dapui = require('dapui')
 
--- Clear All Breakpoints: Remove all breakpoints in the current session
-vim.keymap.set('n', '<Leader>bc', function() require('dap').clear_breakpoints() end, {desc = 'Clear All Breakpoints'})
+-- Keybindings
+vim.keymap.set('n', '<Leader>dr', function()
+  dap.terminate()
+  dap.continue()
+end, { desc = 'Restart Debugging' })
 
--- Conditional Breakpoint: Set a breakpoint with a condition
-vim.keymap.set('n', '<Leader>bc', function()
-    local condition = vim.fn.input('Breakpoint condition: ')
-    require('dap').set_breakpoint(condition)
-end, {desc = 'Conditional Breakpoint'})
+vim.keymap.set('n', '<Leader>bcc', function()
+  dap.clear_breakpoints()
+end, { desc = 'Clear All Breakpoints' })
 
--- Toggle DAP UI: Show or hide DAP UI elements
-vim.keymap.set('n', '<Leader>du', function() require('dapui').toggle() end, {desc = 'Toggle DAP UI'})
+vim.keymap.set('n', '<Leader>b', function()
+  local condition = vim.fn.input('Breakpoint condition: ')
+  dap.set_breakpoint(condition)
+end, { desc = 'Conditional Breakpoint' })
 
--- Evaluate Expression: Evaluate expressions in the current context
+vim.keymap.set('n', '<Leader>du', function()
+  dapui.toggle()
+end, { desc = 'Toggle DAP UI' })
+
 vim.keymap.set('n', '<Leader>de', function()
-    local expression = vim.fn.input('Evaluate: ')
-    require('dap').repl.evaluate(expression)
-end, {desc = 'Evaluate Expression'})
+  local expression = vim.fn.input('Evaluate: ')
+  dap.repl.evaluate(expression)
+end, { desc = 'Evaluate Expression' })
 
--- Next Breakpoint: Navigate to the next breakpoint
-vim.keymap.set('n', '<Leader>bn', function() require('dap').goto_next_breakpoint() end, {desc = 'Next Breakpoint'})
+vim.keymap.set('n', '<Leader>bn', function()
+  dap.goto_next_breakpoint()
+end, { desc = 'Next Breakpoint' })
 
--- Previous Breakpoint: Navigate to the previous breakpoint
-vim.keymap.set('n', '<Leader>bp', function() require('dap').goto_prev_breakpoint() end, {desc = 'Previous Breakpoint'})
+vim.keymap.set('n', '<Leader>bp', function()
+  dap.goto_prev_breakpoint()
+end, { desc = 'Previous Breakpoint' })
 
--- Function Breakpoint: Set a breakpoint on a function by name
 vim.keymap.set('n', '<Leader>bf', function()
-    local function_name = vim.fn.input('Function name: ')
-    require('dap').set_breakpoint(function_name)
-end, {desc = 'Function Breakpoint'})
+  local function_name = vim.fn.input('Function name: ')
+  dap.set_breakpoint(function_name)
+end, { desc = 'Function Breakpoint' })
+
+-- Adapters and Configurations
+
+-- C/C++ using lldb
+dap.adapters.codelldb = {
+    type = 'server',
+    host = '127.0.0.1',
+    port = 13000
+}
+
+dap.configurations.c = {
+    {
+        type = 'codelldb',
+        request = 'launch',
+        program = function()
+            return vim.fn.input('Path to executable: ', vim.fn.getcwd()..'/', 'file')
+        end,
+        --program = '${fileDirname}/${fileBasenameNoExtension}',
+        cwd = '${workspaceFolder}',
+        terminal = 'integrated'
+    }
+}
+
+dap.configurations.cpp = dap.configurations.c
+
+dap.configurations.rust = {
+    {
+        type = 'codelldb',
+        request = 'launch',
+        program = function()
+            return vim.fn.input('Path to executable: ', vim.fn.getcwd()..'/', 'file')
+        end,
+        cwd = '${workspaceFolder}',
+        terminal = 'integrated',
+        sourceLanguages = { 'rust' }
+    }
+}
+
+-- Rust using lldb
+dap.configurations.rust = dap.configurations.cpp
+
+
+dap.configurations.python = {
+    {
+      type = 'python',
+      request = 'launch',
+      name = 'Launch file',
+      program = '${file}',
+      pythonPath = function()
+        return vim.fn.exepath('python')
+      end,
+    },
+  }
+
+-- DAP UI Setup
+require('dapui').setup()
+vim.api.nvim_create_user_command('JaimeDapHelp', function()
+  local lines = {
+    'DAP Keybindings:',
+    '',
+    '<Leader>dr - Restart debugging',
+    '<Leader>bc - Conditional breakpoint / Clear breakpoints',
+    '<Leader>bf - Function breakpoint',
+    '<Leader>du - Toggle DAP UI',
+    '<Leader>de - Evaluate expression',
+    '<Leader>bn - Next breakpoint',
+    '<Leader>bp - Previous breakpoint',
+  }
+
+  vim.cmd('new')
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+  vim.bo.buftype = 'nofile'
+  vim.bo.bufhidden = 'wipe'
+  vim.bo.swapfile = false
+  vim.bo.filetype = 'help'
+end, {})
 

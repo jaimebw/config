@@ -13,6 +13,11 @@ vim.keymap.set('n', '<leader>pf', function()
     })
 end, {})
 
+vim.keymap.set('n', '<leader>pa', function()
+    find_files({
+    })
+end, {})
+
 -- Git files
 vim.keymap.set('n', '<C-p>', function()
     git_files({

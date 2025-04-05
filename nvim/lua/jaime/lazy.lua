@@ -29,6 +29,10 @@ require('lazy').setup({
     "nvim-lua/plenary.nvim",
     "MunifTanjim/nui.nvim",
     --- The below dependencies are optional,
+    "echasnovski/mini.pick", -- for file_selector provider mini.pick
+    "nvim-telescope/telescope.nvim", -- for file_selector provider telescope
+    "hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
+    "ibhagwan/fzf-lua", -- for file_selector provider fzf
     "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
     "zbirenbaum/copilot.lua", -- for providers='copilot'
     {
@@ -59,18 +63,45 @@ require('lazy').setup({
   },
 },
 
+    -- DAP
+    { "mfussenegger/nvim-dap"},
+    {
+        "jay-babu/mason-nvim-dap.nvim",
+        dependencies = {
+            "mfussenegger/nvim-dap"
+        }
 
-
-
-
-    { "rcarriga/nvim-dap-ui",
-        dependencies = {"mfussenegger/nvim-dap", "nvim-neotest/nvim-nio",{"nvim-telescope/telescope-dap.nvim"}}
     },
-    { "folke/neodev.nvim", opts = {} },
-    {'tpope/vim-commentary'
-},
-    { 'Civitasv/cmake-tools.nvim' },
+    {
+        "rcarriga/nvim-dap-ui",
+        event = "VeryLazy",
+        dependencies = {
+            "mfussenegger/nvim-dap",
+            "theHamsta/nvim-dap-virtual-text",
+            "nvim-neotest/nvim-nio",
+            "nvim-telescope/telescope-dap.nvim"
+        },
+        config = function()
+            local dap, dapui = require("dap"), require("dapui")
+            dapui.setup()
+            -- Automatically open UI when debugging starts
+            dap.listeners.after.event_initialized["dapui_config"] = function()
+                dapui.open()
+            end
+            -- Automatically close UI when debugging ends
+            dap.listeners.before.event_terminated["dapui_config"] = function()
+                dapui.close()
+            end
+            dap.listeners.before.event_exited["dapui_config"] = function()
+                dapui.close()
+            end
+        end
+    },
 
+
+    { "folke/neodev.nvim", opts = {} },
+    {'tpope/vim-commentary'},
+    { 'Civitasv/cmake-tools.nvim' },
     {'nvim-lualine/lualine.nvim',
     dependencies= { 'nvim-tree/nvim-web-devicons'},
     opt = true },
@@ -107,7 +138,7 @@ require('lazy').setup({
 
     {
           'rose-pine/neovim',
-          name= 'rose-pine',
+          name= 'roseson-pine',
     },
     {
     "rebelot/kanagawa.nvim",
@@ -131,8 +162,7 @@ require('lazy').setup({
         dependencies = {
       -- LSP Support
           {'neovim/nvim-lspconfig'},             -- Required
-          {                                      -- Optional
-            'williamboman/mason.nvim',
+          {'williamboman/mason.nvim',            -- Optional
         build = function()
           pcall(vim.cmd, 'MasonUpdate')
         end,

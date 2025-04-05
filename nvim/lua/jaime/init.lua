@@ -1,3 +1,6 @@
 require("jaime.set")
+require("jaime.header")
 require("jaime.remap")
 require("jaime.lazy")
+require("jaime.cursor")
+require("jaime.local_info")
