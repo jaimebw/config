@@ -65,6 +65,7 @@ require('lazy').setup({
 
     -- DAP
     { "mfussenegger/nvim-dap"},
+    { "nvim-neotest/nvim-nio", lazy = false },
     {
         "jay-babu/mason-nvim-dap.nvim",
         dependencies = {
@@ -74,28 +75,13 @@ require('lazy').setup({
     },
     {
         "rcarriga/nvim-dap-ui",
-        event = "VeryLazy",
+        lazy = false,
         dependencies = {
             "mfussenegger/nvim-dap",
             "theHamsta/nvim-dap-virtual-text",
             "nvim-neotest/nvim-nio",
             "nvim-telescope/telescope-dap.nvim"
-        },
-        config = function()
-            local dap, dapui = require("dap"), require("dapui")
-            dapui.setup()
-            -- Automatically open UI when debugging starts
-            dap.listeners.after.event_initialized["dapui_config"] = function()
-                dapui.open()
-            end
-            -- Automatically close UI when debugging ends
-            dap.listeners.before.event_terminated["dapui_config"] = function()
-                dapui.close()
-            end
-            dap.listeners.before.event_exited["dapui_config"] = function()
-                dapui.close()
-            end
-        end
+        }
     },
 
 
@@ -156,25 +142,17 @@ require('lazy').setup({
 
     'tpope/vim-fugitive',
 
+    { 'neovim/nvim-lspconfig' },
     {
-        'VonHeikemen/lsp-zero.nvim',
-        branch = 'v2.x',
-        dependencies = {
-      -- LSP Support
-          {'neovim/nvim-lspconfig'},             -- Required
-          {'williamboman/mason.nvim',            -- Optional
-        build = function()
-          pcall(vim.cmd, 'MasonUpdate')
-        end,
-      },
-          {'williamboman/mason-lspconfig.nvim'}, -- Optional
-
-          -- Autocompletion
-          {'hrsh7th/nvim-cmp'},     -- Required
-          {'hrsh7th/cmp-nvim-lsp'}, -- Required
-          {'L3MON4D3/LuaSnip'},     -- Required
-    }
-  },
+      'williamboman/mason.nvim',
+      build = function()
+        pcall(vim.cmd, 'MasonUpdate')
+      end,
+    },
+    { 'williamboman/mason-lspconfig.nvim' },
+    { 'hrsh7th/nvim-cmp' },
+    { 'hrsh7th/cmp-nvim-lsp' },
+    { 'L3MON4D3/LuaSnip' },
 
     'github/copilot.vim'
 })

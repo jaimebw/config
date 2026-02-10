@@ -1,20 +1,35 @@
-local lsp = require("lsp-zero").preset({})
-local lspconfig = require('lspconfig')
+local on_attach = function(_, bufnr)
+  local opts = { buffer = bufnr, noremap = true, silent = true }
+  vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+  vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+  vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+  vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+  vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+end
 
--- Fix Undefined global 'vim'
-lsp.nvim_workspace()
+local lua_ls_opts = {
+  on_attach = on_attach,
+  settings = {
+    Lua = {
+      diagnostics = { globals = { "vim" } },
+      workspace = { checkThirdParty = false },
+      telemetry = { enable = false },
+    },
+  },
+}
 
-lsp.on_attach(function(client, bufnr)
-  lsp.default_keymaps({buffer = bufnr})
-end)
-
--- Configure lua language server
-lspconfig.lua_ls.setup(lsp.nvim_lua_ls())
-
--- You can uncomment this if you want to install these LSPs automatically
--- lsp.ensure_installed({
---   'rust_analyzer',
---   'ruff_lsp'
--- })
-
-lsp.setup()
+if vim.lsp and vim.lsp.config and vim.lsp.enable then
+  vim.lsp.config("lua_ls", lua_ls_opts)
+  vim.lsp.enable("lua_ls")
+else
+  require("lspconfig").lua_ls.setup({
+    on_attach = on_attach,
+    settings = {
+      Lua = {
+        diagnostics = { globals = { "vim" } },
+        workspace = { checkThirdParty = false },
+        telemetry = { enable = false },
+      },
+    },
+  })
+end
