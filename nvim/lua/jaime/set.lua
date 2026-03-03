@@ -15,6 +15,7 @@ vim.opt.termguicolors = true
 vim.opt.scrolloff = 8
 vim.opt.updatetime = 50
 vim.opt.colorcolumn = "80"
+vim.opt.shortmess:append("I")
 
 vim.g.mapleader = " "
 
@@ -41,4 +42,3 @@ vim.cmd('autocmd BufNewFile,BufRead *.tera.html set filetype=html')
 
 -- -- Set iTerm2 transparency to 0.8 (80%) on NeoVim startup
 -- set_iterm2_transparency(0.8)
-
