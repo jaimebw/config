@@ -5,7 +5,6 @@
 -- ====================================
 
 local startup_message_lines = {
-  "████                                                               ",
   "                                                                                           ███   ██                                                               ",
   "                                                                                      ████       ██               ████████████                                    ",
   "                                                                                  █████         ███           ████            █                                    ",
@@ -47,6 +46,7 @@ local startup_message_lines = {
   "                                   ██████████                                                                                                                     ",
   "                                  ███████",
 }
+local startup_footer_text = "Afirmamos que el esplendor del mundo se ha enriquecido con una belleza nueva: la belleza de la velocidad.\n Neovim by Jaime Bowen"
 local startup_splash_ns = vim.api.nvim_create_namespace("JaimeStartupSplash")
 local startup_splash = {
   win = nil,
@@ -71,6 +71,26 @@ local function longest_line(lines)
   return width
 end
 
+local function centered_line(text, width)
+  local text_width = vim.fn.strdisplaywidth(text)
+
+  if text_width >= width then
+    return text
+  end
+
+  return string.rep(" ", math.floor((width - text_width) / 2)) .. text
+end
+
+local function build_footer_lines(text, width)
+  local footer_lines = {}
+
+  for _, line in ipairs(vim.split(text, "\n", { plain = true })) do
+    footer_lines[#footer_lines + 1] = centered_line(line, width)
+  end
+
+  return footer_lines
+end
+
 local function show_startup_message()
   local buf = vim.api.nvim_create_buf(false, true)
   local lines = vim.deepcopy(startup_message_lines)
@@ -84,7 +104,15 @@ local function show_startup_message()
   local editor_height = math.max(vim.o.lines - vim.o.cmdheight - 2, 1)
   local max_height = math.max(editor_height - 2, 1)
   local width = math.min(longest_line(lines), max_width)
-  local height = math.min(#lines, max_height)
+  local footer_lines = build_footer_lines(startup_footer_text, width)
+  local total_lines = #lines + 1 + #footer_lines
+
+  vim.bo[buf].modifiable = true
+  vim.api.nvim_buf_set_lines(buf, -1, -1, false, { "" })
+  vim.api.nvim_buf_set_lines(buf, -1, -1, false, footer_lines)
+  vim.bo[buf].modifiable = false
+
+  local height = math.min(total_lines, max_height)
   local opts = {
     style = "minimal",
     relative = "editor",
